@@ -1,0 +1,897 @@
+from functools import reduce
+
+class ListaVaciaError(Exception):
+    """Excepción personalizada para listas vacías en kata10_media_segura."""
+    pass
+
+# PROYECTO 3 - Katas Python
+# Este tercer proyecto consiste en completar, validar y entregar todos los ejercicios de Python que se plantean a continuación:
+
+
+def kata01_frecuencia_letras(texto):
+    """
+    Escribe una función que reciba una cadena de texto como parámetro y devuelva un diccionario con las frecuencias de cada letra en la cadena. Los espacios no deben ser considerados.
+    """
+    # Diccionario donde acumulamos las apariciones de cada carácter
+    frecuencias = {}
+    # Recorremos el texto carácter a carácter, ignorando los espacios
+    for c in texto:
+        if c != " ":
+            # Usamos dict.get para sumar 1 (0 por defecto si la clave no existe aún)
+            frecuencias[c] = frecuencias.get(c, 0) + 1
+    return frecuencias
+
+
+def kata02_duplicar_lista(numeros):
+    """
+    Dada una lista de números, obtén una nueva lista con el doble de cada valor. Usa la función map().
+    """
+    # Aplicamos una función lambda a cada número con map para duplicar su valor
+    return list(map(lambda num: num * 2, numeros))
+
+
+def kata03_encontrar_coincidentes(palabras, objetivo):
+    """
+    Escribe una función que tome una lista de palabras y una palabra objetivo como parámetros. La función debe devolver una lista con todas las palabras de la lista original que contengan la palabra objetivo.
+    """
+    # Quitamos espacios y pasamos a minúsculas
+    objetivo_limpio = objetivo.strip().lower()
+    # Si el objetivo queda vacío, devolvemos lista vacía
+    if not objetivo_limpio:
+        return []
+    # Usamos filter + lambda para quedarnos solo con las palabras que contienen el objetivo
+    return list(filter(lambda p: objetivo_limpio in p.lower(), palabras))
+
+
+def kata04_diferencia_listas(lista1, lista2):
+    """
+    Genera una función que calcule la diferencia entre los valores de dos listas. Usa la función map().
+    """
+    # Usamos map con dos listas en paralelo: restamos cada par de elementos
+    return list(map(lambda num_l1, num_l2: num_l1 - num_l2, lista1, lista2))
+
+
+def kata05_media_con_estado(notas, nota_aprobado=5):
+    """
+    Escribe una función que tome una lista de números como parámetro y un valor opcional nota_aprobado (por defecto 5). La función debe calcular la media de los números en la lista y determinar si la media es mayor o igual que nota_aprobado. Si es así, el estado será "aprobado"; de lo contrario, "suspenso". La función debe devolver una tupla que contenga la media y el estado.
+    """
+    # Si no hay notas la media es 0
+    if not notas:
+        return 0, "suspenso"
+    # Calculamos la media de la lista de números
+    nota_media = sum(notas) / len(notas)
+    # Decidimos el estado
+    estado = "aprobado" if nota_media >= nota_aprobado else "suspenso"
+    # Devolvemos la tupla
+    return nota_media, estado
+
+
+def kata06_factorial_recursivo(num):
+    """
+    Escribe una función que calcule el factorial de un número de manera recursiva.
+    """
+    # No existe el factorial de números negativos
+    if num < 0:
+        raise ValueError("El factorial no está definido para números negativos")
+    # El factorial de 0 y 1 es 1
+    elif num <= 1:
+        return 1
+    # Usamos la recursividad para ir multiplicando por cada iteración de num - 1
+    return num * kata06_factorial_recursivo(num - 1)
+
+
+def kata07_tuplas_a_strings(lista_tuplas):
+    """
+    Genera una función que convierta una lista de tuplas a una lista de strings. Usa la función map().
+    """
+    # Convertimos cada elemento de la tupla a str y los unimos con '-' usando el método join
+    return list(map(lambda tupla: "-".join(map(str, tupla)), lista_tuplas))
+
+
+def kata08_division_segura():
+    """
+    Escribe un programa que pida al usuario dos números e intente dividirlos. Si el usuario ingresa un valor no numérico o intenta dividir por cero, maneja esas excepciones de manera adecuada y muestra un mensaje indicando si la división fue exitosa o no.
+    """
+    dividendo = input("Introduce el dividendo: ")
+    divisor = input("Introduce el divisor: ")
+    try:
+        # Intentamos convertir a float y realizar la división
+        dividendo = float(dividendo)
+        divisor = float(divisor)
+        resultado = dividendo / divisor
+    except ValueError:
+        # Alguno de los valores no es numérico
+        print(f"La división '{dividendo} / {divisor}' no fue exitosa, los valores deben ser numéricos")
+    except ZeroDivisionError:
+        # El divisor es cero
+        print(f"La división '{dividendo} / {divisor}' no fue exitosa, no se puede dividir entre cero")
+    else:
+        # Si no ha habido ninguna excepción nos da la respuesta exitosa
+        print(f"La división '{dividendo} / {divisor} = {resultado}' fue exitosa")
+
+
+def kata09_filtrar_mascotas(nombres_mascotas):
+    """
+    Escribe una función que tome una lista de nombres de mascotas como parámetro y devuelva una nueva lista excluyendo ciertas mascotas prohibidas en España. La lista de mascotas a excluir es ["Mapache", "Tigre", "Serpiente Pitón", "Cocodrilo", "Oso"]. Usa la función filter().
+    """
+    mascotas_prohibidas = ["Cocodrilo", "Caimán", "Serpiente Pitón", "Tiburón", "Ornitorrinco"]
+    # Usamos filter + lambda para quedarnos solo con las mascotas cuyo nombre (normalizado con title()) no está en la lista de prohibidas
+    return list(filter(lambda mascota: mascota.title() not in mascotas_prohibidas, nombres_mascotas))
+
+
+def kata10_media_segura(numeros):
+    """
+    Escribe una función que reciba una lista de números y calcule su promedio. Si la lista está vacía, lanza una excepción personalizada y maneja el error adecuadamente.
+    """
+    if not numeros:
+        # Si la lista está vacía lanzamos excepción personalizada
+        raise ListaVaciaError("La lista de números está vacía")
+    # Calculamos la media de la lista de números
+    return sum(numeros) / len(numeros)
+    
+
+def kata11_pedir_edad():
+    """
+    Escribe un programa que pida al usuario que introduzca su edad. Si el usuario ingresa un valor no numérico o un valor fuera del rango esperado (por ejemplo, menor que 0 o mayor que 120), maneja las excepciones adecuadamente.
+    """
+    edad = input("Indica tu edad: ")
+    try:
+        edad = int(edad)
+        if edad < 0 or edad > 120:
+            # Forzamos un ValueError si la edad está fuera del rango esperado
+            raise ValueError("Edad fuera de rango (0-120)")
+    except ValueError:
+        # Cualquier problema de conversión o rango se maneja aquí
+        print("Error: introduce una edad numérica entre 0 y 120.")
+    else:
+        # Si no ha habido ninguna excepción te escribe un mensaje
+        print(f"Tu edad es {edad}, ¡estás en tu mejor momento!")
+
+
+def kata12_longitudes_palabras(frase):
+    """
+    Genera una función que, al recibir una frase, devuelva una lista con la longitud de cada palabra. Usa la función map().
+    """
+    # Separamos la frase por espacios
+    palabras = frase.split()
+    # Aplicamos len a cada palabra con map para calcular su longitud
+    return list(map(len, palabras))
+
+
+def kata13_mayuscula_minuscula(caracteres):
+    """
+    Genera una función que, para un conjunto de caracteres, devuelva una lista de tuplas con cada letra en mayúsculas y minúsculas. Las letras no pueden estar repetidas. Usa la función map().
+    """
+    # pasamos los caracteres a una lista ordenada sin repeticiones
+    caracteres_unicos = []
+    for c in caracteres:
+        if c.lower() not in caracteres_unicos:
+            caracteres_unicos.append(c.lower())
+    # Transformamos cada carácter en una tupla (MAY, min)
+    return list(map(lambda ch: (ch.upper(), ch.lower()), caracteres_unicos))
+    
+
+def kata14_palabras_que_empiezan_por(palabras, letra):
+    """
+    Crea una función que retorne las palabras de una lista que comiencen con una letra en específico. Usa la función filter().
+    """
+    # Nos quedamos con las palabras que empiezan por la letra ignorando mayúsculas (y evitando error si la palabra está vacía)
+    return list(filter(lambda palabra: palabra != "" and palabra[0].lower() == letra.lower() , palabras))
+
+
+def kata15_sumar_tres_lambda(numeros):
+    """
+    Crea una función lambda que sume 3 a cada número de una lista dada.
+    """
+    # Aplicamos una función lambda a cada número con map para sumar 3
+    return list(map(lambda num: num + 3, numeros))
+
+
+def kata16_palabras_mas_largas_que(frase, n):
+    """
+    Escribe una función que tome una cadena de texto y un número entero n como parámetros y devuelva una lista de todas las palabras que sean más largas que n. Usa la función filter().
+    """
+    # Separamos la frase por espacios
+    palabras = frase.split()
+    # Aplicamos una función lambda a cada palabra para comparar su longitud con n
+    return list(filter(lambda palabra: len(palabra) > n, palabras))
+
+
+def kata17_digitos_a_numero(digitos):
+    """
+    Crea una función que tome una lista de dígitos y devuelva el número correspondiente. Por ejemplo, [5,7,2] corresponde al número 572. Usa la función reduce().
+    """
+    # En cada iteración multiplicamos por 10 y le sumamos el siguiente dígito (comenzando por 0)
+    return reduce(lambda acumulador, num: (acumulador * 10) + num, digitos, 0)
+
+
+def kata18_filtrar_mejores_estudiantes(nota_corte=90):
+    """
+    Escribe un programa en Python que cree una lista de diccionarios con información de estudiantes (nombre, edad, calificación) y use filter para extraer a los estudiantes con una calificación mayor o igual a 90.
+    """
+    estudiantes = [
+        {"nombre": "Antonio", "edad": 35, "calificacion": 90},
+        {"nombre": "Ana Belén", "edad": 27, "calificacion": 92},
+        {"nombre": "Agustín", "edad": 37, "calificacion": 78},
+    ]
+    # Comparamos la calificación para comprobar que sea >= que la nota de corte (por defecto 90)
+    return list(filter(lambda estudiante: estudiante["calificacion"] >= nota_corte, estudiantes))
+
+
+def kata19_filtrar_impares_lambda(numeros):
+    """
+    Crea una función lambda que filtre los números impares de una lista dada.
+    """
+    # Aplicamos una función lambda a cada número para comprobar si es impar
+    return list(filter(lambda num: num % 2 != 0, numeros))
+
+
+def kata20_filtrar_enteros(valores):
+    """
+    Para una lista con elementos de tipo integer y string, obtén una nueva lista solo con los valores int. Usa la función filter().
+    """
+    # con type() comprobamos si cada valor es int
+    return list(filter(lambda valor: type(valor) is int, valores))
+
+
+def kata21_cubo_lambda(num):
+    """
+    Crea una función que calcule el cubo de un número dado mediante una función lambda.
+    """
+    # definimos la función cubo con lambda
+    cubo = lambda n: n ** 3
+    return cubo(num)
+
+
+def kata22_producto_lista(numeros):
+    """
+    Dada una lista numérica, obtén el producto total de los valores. Usa la función reduce().
+    """
+    # Si la lista está vacía devolvemos 0
+    if not numeros:
+        return 0
+    # En cada iteración multiplicamos al acumulador (comenzando por 1)
+    return reduce(lambda acumulador, num: acumulador * num, numeros, 1)
+
+
+def kata23_concatenar_palabras(palabras):
+    """
+    Concatena una lista de palabras. Usa la función reduce().
+    """
+    # Controlamos el caso de que la lista esté vacía y concatenamos con "_"
+    return reduce(lambda acumulador, palabra: palabra if acumulador == "" else acumulador + "_" + palabra, palabras, "")
+
+
+def kata24_diferencia_total(numeros):
+    """
+    Calcula la diferencia total en los valores de una lista. Usa la función reduce().
+    """
+    # Si la lista está vacía devolvemos 0
+    if not numeros:
+        return 0
+    # En cada iteración restamos al acumulador
+    return reduce(lambda acumulador, num: acumulador - num, numeros)
+
+
+def kata25_contar_caracteres(texto):
+    """
+    Crea una función que cuente el número de caracteres en una cadena de texto dada.
+    """
+    # básicamente un len()... (espero que el objetivo de la kata no fuese hacer un for in)
+    return len(texto)
+
+
+def kata26_modulo_lambda(dividendo, divisor):
+    """
+    Crea una función lambda que calcule el resto de la división entre dos números dados.
+    """
+    if divisor == 0:
+        raise ValueError("El divisor no puede ser 0")
+    # definimos la función módulo con lambda
+    modulo = lambda num1, num2: num1 % num2
+    return modulo(dividendo, divisor)
+
+
+def kata27_promedio(numeros):
+    """
+    Crea una función que calcule el promedio de una lista de números.
+    """
+    # Si no hay números la media es 0
+    if not numeros:
+        return 0.0
+    # Calculamos el promedio de la lista de números
+    return sum(numeros) / len(numeros)
+
+
+def kata28_primer_duplicado(elementos):
+    """
+    Crea una función que busque y devuelva el primer elemento duplicado en una lista dada.
+    """
+    revisados = []
+    for elemento in elementos:
+        # Cuando encuentra el primer duplicado lo devuelve
+        if elemento in revisados:
+            return elemento
+        # Si es un elemento nuevo lo añadimos a la lista de revisados
+        revisados.append(elemento)
+    # Si no hay duplicados, devolvemos None
+    return None
+
+
+def kata29_enmascarar(valor):
+    """
+    Crea una función que convierta una variable en una cadena de texto y enmascare todos los caracteres con el carácter '#' excepto los últimos cuatro.
+    """
+    # Convertimos a string 
+    texto = str(valor)
+    # Si la longitud es 4 o más, enmascaramos los primeros caracteres
+    if len(texto) >= 4:
+        texto = "#" * (len(texto) - 4) + texto[-4:]
+    # devolvemos el valor en string
+    return texto
+
+def kata30_son_anagramas(palabra1, palabra2):
+    """
+    Crea una función que determine si dos palabras son anagramas, es decir, si están formadas por las mismas letras pero en diferente orden.
+    """
+    # Normalizamos las palabras aplicando minúsculas, quitando espacios y ordenando los caracteres
+    p1_norm = sorted(palabra1.lower().replace(" ", ""))
+    p2_norm = sorted(palabra2.lower().replace(" ", ""))
+    # Comparamos las palabras
+    return p1_norm == p2_norm
+
+
+def kata31_buscar_nombre():
+    """
+    Crea una función que solicite al usuario ingresar una lista de nombres y luego un nombre para buscar en esa lista. Si el nombre está en la lista, imprime un mensaje indicando que fue encontrado; de lo contrario, lanza una excepción.
+    """
+    # Leemos la lista de nombres, la pasamos a minúsculas y la separamos por espacios
+    nombres = input("Introduce un listado de nombres separados por espacios: ").lower().split()
+    # Leemos el nombre objetivo y eliminamos espacios al principio y al final
+    objetivo = input("Introduce un nombre para buscar en esa lista: ").strip()
+    # Controlamos posibles errores
+    if not nombres:
+        raise ListaVaciaError("El listado no tiene ningún elemento")
+    if objetivo.lower() not in nombres:
+        raise ValueError("El nombre no se encuentra en el listado")
+    # Si encontramos el nombre imprimimos el mensaje de éxito
+    print(f"El nombre {objetivo} fue encontrado en el listado")
+
+
+def kata32_buscar_puesto_empleado(nombre_completo, empleados):
+    """
+    Crea una función que tome un nombre completo y una lista de empleados, busque el nombre en la lista y devuelva el puesto del empleado si se encuentra; de lo contrario, devuelve un mensaje indicando que la persona no trabaja aquí.
+    """
+    # Comparamos el nombre con cada empleado de la lista
+    for empleado in empleados:
+        if empleado["nombre"].lower() == nombre_completo.strip().lower():
+            return empleado["puesto"]
+    # Si no se encuentra en el listado de empleados devolvemos un mensaje indicándolo
+    return f"{nombre_completo} no trabaja aquí"
+
+
+def kata33_sumar_listas_lambda(lista1, lista2):
+    """
+    Crea una función lambda que sume elementos correspondientes de dos listas dadas.
+    """
+    # Utilizamos map() para aplicar la suma a cada elemento de las listas
+    return list(map(lambda num_l1, num_l2: num_l1 + num_l2, lista1, lista2))
+
+
+class Arbol:
+    """
+    Kata 34: Crea la clase Arbol
+     · Define un árbol genérico con un tronco y ramas como atributos.
+     · Métodos disponibles: crecer_tronco, nueva_rama, crecer_ramas, quitar_rama, info_arbol.
+
+     · Código a seguir:
+      a. Inicializar un árbol con un tronco de longitud 1 y una lista vacía de ramas.
+      b. Implementar el método crecer_tronco para aumentar la longitud del tronco en una unidad.
+      c. Implementar el método nueva_rama para agregar una nueva rama de longitud 1 a la lista de ramas.
+      d. Implementar el método crecer_ramas para aumentar en una unidad la longitud de todas las ramas existentes.
+      e. Implementar el método quitar_rama para eliminar una rama en una posición específica.
+      f. Implementar el método info_arbol para devolver información sobre la longitud del tronco, el número de ramas y sus longitudes.
+
+     · Caso de uso:
+      a. Crear un árbol.
+      b. Hacer crecer el tronco una unidad.
+      c. Añadir una nueva rama.
+      d. Hacer crecer todas las ramas una unidad.
+      e. Añadir dos nuevas ramas.
+      f. Retirar la rama situada en la posición 2.
+      g. Obtener información sobre el árbol.
+    """
+
+    def __init__(self):
+        # Definimos el tronco y las ramas
+        self.tronco = 1
+        self.ramas = []
+
+    def crecer_tronco(self):
+        # El tronco crece 1
+        self.tronco += 1
+
+    def nueva_rama(self):
+        # Añadimos una rama
+        self.ramas.append(1)
+
+    def crecer_ramas(self):
+        # Usamos list comprehension para crecer en uno cada rama
+        self.ramas = [rama + 1 for rama in self.ramas]
+
+    def quitar_rama(self, posicion):
+        # Controlamos un posible Valor fuera de rango
+        if posicion < 0 or posicion >= len(self.ramas):
+            raise ValueError(f"El arbol no tiene ramas en la posición {posicion}")
+        # Podamos la rama de la posición indicada
+        self.ramas.pop(posicion)
+
+    def info_arbol(self):
+        # Devolvemos un diccionario con la info del arbol
+        return {"tronco": self.tronco, "num_ramas": len(self.ramas), "ramas": self.ramas}
+
+
+class UsuarioBanco:
+    """
+    Kata 35: Crea la clase UsuarioBanco
+     · Representa a un usuario de un banco con su nombre, saldo y si tiene o no cuenta corriente.
+     · Métodos: retirar_dinero, transferir_dinero, agregar_dinero.
+
+     · Código a seguir:
+      a. Inicializar un usuario con nombre, saldo y un indicador (True o False) de cuenta corriente.
+      b. Implementar retirar_dinero para sustraer dinero del saldo, lanzando un error si no es posible.
+      c. Implementar transferir_dinero para transferir dinero desde otro usuario, lanzando un error en caso de fallo.
+      d. Implementar agregar_dinero para aumentar el saldo del usuario.
+
+     · Caso de uso:
+      a. Crear dos usuarios: "Alicia" con saldo inicial de 100 y "Bob" con saldo inicial de 50, ambos con cuenta corriente.
+      b. Agregar 20 unidades al saldo de Bob.
+      c. Transferir 80 unidades de Bob a Alicia.
+      d. Retirar 50 unidades del saldo de Alicia.
+    """
+
+    def __init__(self, nombre, saldo, tiene_cuenta_corriente):
+        # Validamos el saldo inicial y creamos el usuario
+        if saldo < 0:
+            raise ValueError("El saldo inicial no puede ser negativo")
+        self.nombre = nombre
+        self.saldo = saldo
+        self.tiene_cuenta_corriente = bool(tiene_cuenta_corriente)
+
+    def agregar_dinero(self, cantidad):
+        # Aumentamos el saldo en la cantidad indicada y lanzamos ValueError si la cantidad no es válida o no tiene cuenta corriente
+        if cantidad <= 0:
+            raise ValueError("La cantidad a ingresar debe ser mayor que 0")
+        if not self.tiene_cuenta_corriente:
+            raise ValueError(f"El usuario {self.nombre} no dispone de cuenta corriente")
+        self.saldo += cantidad
+        return self.saldo
+
+    def retirar_dinero(self, cantidad):
+        # Reducimos el saldo en la cantidad indicada y lanzamos ValueError si la cantidad no es válida o no tiene cuenta corriente
+        if cantidad <= 0:
+            raise ValueError("La cantidad a retirar debe ser mayor que 0")
+        if not self.tiene_cuenta_corriente:
+            raise ValueError(f"El usuario {self.nombre} no dispone de cuenta corriente")
+        if cantidad > self.saldo:
+            raise ValueError(f"El saldo de {self.nombre} es insuficiente")
+        self.saldo -= cantidad
+        return self.saldo
+
+    def transferir_dinero(self, otro_usuario, cantidad):
+        # Realizamos la transferencia: desde otro_usuario (origen) hacia self (destino) y comprobamos que la cantidad y el usuario sean correctos
+        if cantidad <= 0:
+            raise ValueError("La cantidad a transferir debe ser mayor que 0")
+        if not isinstance(otro_usuario, UsuarioBanco):
+            raise TypeError("otro_usuario debe ser una instancia de UsuarioBanco")
+        # Primero retiramos del otro_usuario
+        otro_usuario.retirar_dinero(cantidad)
+        # Si no lanza error, ingresamos en el usuario de destino
+        self.agregar_dinero(cantidad)
+        return otro_usuario.saldo, self.saldo
+
+
+def contar_palabras(texto):
+    """
+    -> Kata 36_a: Crear una función contar_palabras que cuente el número de veces que aparece cada palabra en el texto y devuelva un diccionario.
+    """
+    # Separamos las palabras del texto
+    palabras = texto.lower().split()
+    # Devolvemos un diccionario de palabras con un contador (set() para contar sin duplicidades)
+    return {palabra: palabras.count(palabra) for palabra in set(palabras)}
+
+def reemplazar_palabras(texto, palabra_original, palabra_nueva):
+    """
+    -> Kata 36_b: Crear una función reemplazar_palabras para sustituir una palabra_original por una palabra_nueva en el texto y devolver el texto modificado.
+    """
+    # Recorremos cada palabra y sustituimos las coincidentes
+    palabras = [
+        palabra_nueva if palabra.lower() == palabra_original.lower() else palabra 
+        for palabra in texto.split()
+    ]
+    # Reconstruimos el texto uniendo de nuevo con espacios
+    return " ".join(palabras)
+
+def eliminar_palabra(texto, palabra_a_eliminar):
+    """
+    -> Kata 36_c: Crear una función eliminar_palabra que elimine una palabra del texto y devuelva el texto sin ella.
+    """
+    # Nos quedamos solo con las palabras que NO sean la que queremos eliminar
+    palabras = [
+        palabra for palabra in texto.split() 
+        if palabra.lower() != palabra_a_eliminar.lower()
+    ]
+    # Reconstruimos el texto uniendo de nuevo con espacios
+    return " ".join(palabras)
+
+def procesar_texto(texto, opcion, *args):
+    """
+    Kata 36: Crea una función llamada procesar_texto
+     · Procesa un texto según la opción especificada: contar_palabras, reemplazar_palabras o eliminar_palabra.
+     · Código a seguir:
+      a. Crear una función contar_palabras que cuente el número de veces que aparece cada palabra en el texto y devuelva un diccionario.
+      b. Crear una función reemplazar_palabras para sustituir una palabra_original por una palabra_nueva en el texto y devolver el texto modificado.
+      c. Crear una función eliminar_palabra que elimine una palabra del texto y devuelva el texto sin ella.
+      d. Crear la función procesar_texto que reciba un texto, una opción ("contar", "reemplazar", "eliminar") y un número variable de argumentos según la opción elegida.
+     · Caso de uso:
+      a. Verificar el funcionamiento completo de procesar_texto.
+    """
+    # Dependiendo de la opción llamamos a las diferentes funciones
+    match(opcion):
+        case "contar":
+            return contar_palabras(texto)
+        case "reemplazar":
+            return reemplazar_palabras(texto, *args)
+        case "eliminar":
+            return eliminar_palabra(texto, *args)
+        case _:
+            return f"La opción {opcion} es incorrecta"
+
+
+def kata37_momento_del_dia(hora):
+    """
+    Genera un programa que nos indique si es de noche, de día o de tarde según la hora proporcionada por el usuario.
+    """
+    try:
+        # Nos quedamos con la hora
+        hh = int(hora.strip().split(":")[0])
+    except ValueError:
+        # Si no podemos convertir a int lanzamos error
+        raise ValueError("El formato de hora indicado no es correcto (hh:mm)")
+    if hh < 0 or hh > 23:
+        # Si la hora no está entre 0 y 23 lanzamos un error
+        raise ValueError("La hora debe estar entre 00:00 y 23:59")
+    if hh >= 21 or hh <= 5:
+        # de 21:00 a 05:59
+        return "Es de noche"
+    elif hh <= 13:
+        # de 06:00 a 13:59
+        return "Es de día"
+    else:
+        # de 14:00 a 20:59
+        return "Es de tarde"
+
+
+def kata38_nota_a_texto(nota):
+    """
+    Escribe un programa que determine qué calificación en texto tiene un alumno según su calificación numérica.
+     · Reglas:
+       0 - 69:  insuficiente
+      70 - 79:  bien
+      80 - 89:  muy bien
+      90 - 100: excelente
+    """
+    if nota < 0 or nota > 100:
+        # Si la nota no está entre 0 y 100 lanzamos un error
+        raise ValueError("La nota debe estar entre 0 y 100")
+    if nota <= 50:
+        return "insuficiente"
+    elif nota <= 75:
+        return "bien"
+    elif nota <= 89:
+        return "muy bien"
+    else:
+        return "excelente"
+
+
+def kata39_area(figura, datos):
+    """
+    Escribe una función que tome dos parámetros: figura (una cadena que puede ser "rectangulo", "circulo" o "triangulo") y datos (una tupla con los datos necesarios para calcular el área de la figura).
+    """
+    # Dependiendo de la figura calculamos un area diferente y esperamos datos diferentes
+    match (figura):
+        case "rectangulo":
+            if len(datos) != 2:
+                raise ValueError("Para un rectángulo se esperan (base, altura)")
+            base, altura = datos
+            return base * altura
+        case "circulo":
+            if len(datos) != 1:
+                # Para que datos tenga solo el radio y sea una tupla debe indicarse como (radio,)
+                raise ValueError("Para un círculo se espera (radio,)")
+            PI = 3.14
+            radio = datos[0]
+            return PI * radio * radio
+        case "triangulo":
+            if len(datos) != 2:
+                raise ValueError("Para un triángulo se esperan (base, altura)")
+            base, altura = datos
+            return base * altura / 2
+        case _:
+            raise ValueError(f"La figura {figura} es incorrecta")
+
+
+def kata40_descuento_tienda_online():
+    """
+    Escribe un programa en Python que utilice condicionales para determinar el monto final de una compra en una tienda en línea, después de aplicar un descuento.
+    El programa debe:
+      a. Solicitar al usuario el precio original de un artículo.
+      b. Preguntar si tiene un cupón de descuento (respuesta sí o no).
+      c. Si la respuesta es sí, solicitar el valor del cupón de descuento.
+      d. Aplicar el descuento al precio original, siempre que el valor del cupón sea válido (mayor a cero).
+      e. Mostrar el precio final de la compra, considerando o no el descuento.
+      f. Usar estructuras de control de flujo (if, elif, else) para llevar a cabo las acciones.
+    """
+    try:
+        # a) Solicitamos el precio original del artículo
+        precio = float(input("Introduce el precio original del artículo: "))
+    except ValueError:
+        # Si no se puede convertir a número, lanzamos un error
+        raise ValueError("El valor introducido no es válido")
+    # Validamos que el precio sea mayor que 0
+    if precio <= 0:
+        raise ValueError("El precio no puede ser <= 0")
+    # b) Preguntamos si tiene cupón de descuento
+    elif input("¿Tienes un cupón de descuento? (sí/no): ").strip().lower() in ("sí", "si", "s"):
+        try:
+            # c) Si la respuesta indica que SÍ tiene cupón, pedimos el valor del cupón
+            descuento = float(input("Indica el valor del cupón de descuento (%): "))
+        except ValueError:
+            # Si no es un número, lanzamos error
+            raise ValueError("El valor introducido no es válido")
+        # Validamos que el cupón sea válido (mayor que 0 y como máximo 100)
+        if descuento <= 0 or descuento > 100:
+            raise ValueError("El descuento debe ser mayor que '0%' y como máximo '100%'")
+        else:
+            # d) Si el cupón es válido, calculamos el precio con descuento
+            precio *= 1 - (descuento / 100)
+    # e) Mostramos el precio final de la compra (con o sin descuento)
+    print(f"El precio final es: {precio}€")
+
+
+if __name__ == "__main__":
+    # Pruebas manuales de las katas
+
+    print("\n=== Kata 01 - frecuencia letras ===")
+    texto = "Python mola"
+    print(f"'{texto}' => {kata01_frecuencia_letras(texto)}")
+
+    print("\n=== Kata 02 - duplicar lista ===")
+    numeros = [1, 2, 3, 4, 5]
+    print(f"{numeros} => {kata02_duplicar_lista(numeros)}")
+
+    print("\n=== Kata 03 - encontrar coincidentes ===")
+    palabras = ["dataset", "date", "delta", "Datas"]
+    objetivo = "data"
+    print(f"'{objetivo}' en {palabras} => {kata03_encontrar_coincidentes(palabras, objetivo)}")
+
+    print("\n=== Kata 04 - diferencia entre listas ===")
+    lista1 = [7, 22, 10, 42]
+    lista2 = [6, 44, -4, 42]
+    print(f"{lista1} - {lista2} => {kata04_diferencia_listas(lista1, lista2)}")
+
+    print("\n=== Kata 05 - media con estado ===")
+    notas = [7, 6, 10, 3]
+    print(f"{notas} => {kata05_media_con_estado(notas)}")
+
+    print("\n=== Kata 06 - factorial recursivo ===")
+    try:
+        num = 5
+        print(f"{num} => {kata06_factorial_recursivo(num)}")
+    except ValueError as e:
+        print(f"{num} => Error valor negativo: {e}")
+    except Exception as e:
+        print(f"{num} => Error: {e}")
+
+    print("\n=== Kata 07 - tuplas a string ===")
+    lista_tuplas = [("Kata", 7), ("ThePower", "Python")]
+    print(f"{lista_tuplas} => {kata07_tuplas_a_strings(lista_tuplas)}")
+
+    print("\n=== Kata 08 - división segura ===")
+    kata08_division_segura()
+
+    print("\n=== Kata 09 - filtrar mascotas ===")
+    nombres_mascotas = ["Hamster", "Conejo", "Gato", "Perro"]
+    print(f"{nombres_mascotas} => {kata09_filtrar_mascotas(nombres_mascotas)}")
+
+    print("\n=== Kata 10 - media segura ===")
+    try:
+        numeros = [7, 6, 10, 3]
+        print(f"{numeros} => {kata10_media_segura(numeros)}")
+    except ListaVaciaError as e:
+        print(f"{numeros} => Error de datos: {e}")
+    except Exception as e:
+        print(f"{numeros} => Error: {e}")
+
+    print("\n=== Kata 11 - pedir edad ===")
+    kata11_pedir_edad()
+
+    print("\n=== Kata 12 - longitudes de palabras ===")
+    frase = "Lorem ipsum dolor sit amet"
+    print(f"'{frase}' => {kata12_longitudes_palabras(frase)}")
+
+    print("\n=== Kata 13 - mayúscula y minúscula ===")
+    caracteres = "PaTAta"
+    print(f"'{caracteres}' => {kata13_mayuscula_minuscula(caracteres)}")
+
+    print("\n=== Kata 14 - palabras que empiezan por ===")
+    palabras = ["Dado", "Lápiz", "", "libro"]
+    letra = "l"
+    print(f"{palabras} empieza por '{letra}' => {kata14_palabras_que_empiezan_por(palabras, letra)}")
+
+    print("\n=== Kata 15 - sumar tres con lambda ===")
+    numeros = [1, 2, 3, 4, 5]
+    print(f"{numeros} => {kata15_sumar_tres_lambda(numeros)}")
+
+    print("\n=== Kata 16 - palabras mas largas que ===")
+    frase = "Prepara los dados, la ficha y el bolígrafo"
+    n = 6
+    print(f"'{frase}' > {n} => {kata16_palabras_mas_largas_que(frase, n)}")
+
+    print("\n=== Kata 17 - dígitos a número ===")
+    digitos = [3, 1, 4]
+    print(f"{digitos} => {kata17_digitos_a_numero(digitos)}")
+
+    print("\n=== Kata 18 - filtrar mejores estudiantes ===")
+    print(f"{kata18_filtrar_mejores_estudiantes()}")
+
+    print("\n=== Kata 19 - filtrar impares con lambda ===")
+    numeros = [1, 2, 3, 4, 5]
+    print(f"{numeros} => {kata19_filtrar_impares_lambda(numeros)}")
+
+    print("\n=== Kata 20 - filtrar enteros ===")
+    valores = [False, "1", "dos", 3]
+    print(f"{valores} => {kata20_filtrar_enteros(valores)}")
+
+    print("\n=== Kata 21 - cubo con lambda ===")
+    num = 5
+    print(f"{num} => {kata21_cubo_lambda(num)}")
+
+    print("\n=== Kata 22 - prodücto de una lista ===")
+    numeros = [2, 5, 11, 2]
+    print(f"{numeros} => {kata22_producto_lista(numeros)}")
+
+    print("\n=== Kata 23 - concatenar palabras ===")
+    palabras = ["beautiful", "is", "better", "than", "ugly"]
+    print(f"{palabras} => {kata23_concatenar_palabras(palabras)}")
+
+    print("\n=== Kata 24 - diferencia total ===")
+    numeros = [42, 7, 9, 2]
+    print(f"{numeros} => {kata24_diferencia_total(numeros)}")
+
+    print("\n=== Kata 25 - contar caracteres ===")
+    texto = "Python != Is Not is not"
+    print(f"'{texto}' => {kata25_contar_caracteres(texto)}")
+
+    print("\n=== Kata 26 - modulo con lambda ===")
+    dividendo = 15
+    divisor = 4
+    try:
+        print(f"{dividendo} % {divisor} => {kata26_modulo_lambda(dividendo, divisor)}")
+    except ValueError as e:
+        print(f"{dividendo} % {divisor} => Error: {e}")
+    except Exception as e:
+        print(f"{dividendo} % {divisor} => Error: {e}")
+
+    print("\n=== Kata 27 - promedio ===")
+    numeros = [42, 7, 9, 2]
+    print(f"{numeros} => {kata27_promedio(numeros)}")
+
+    print("\n=== Kata 28 - primer duplicado ===")
+    elementos = ["hamburguesa", "5", "bebida", 5, "hamburguesa"]
+    print(f"{elementos} => {kata28_primer_duplicado(elementos)}")
+
+    print("\n=== Kata 29 - enmascarar ===")
+    valor = 987654321
+    print(f"'{valor}' => {kata29_enmascarar(valor)}")
+
+    print("\n=== Kata 30 - son anagramas ===")
+    palabra1 = "Sean Connery"
+    palabra2 = "La Roca"
+    print(f"'{palabra1}' - '{palabra2}' => {kata30_son_anagramas(palabra1, palabra2)}")
+
+    print("\n=== Kata 31 - buscar nombre ===")
+    try:
+        kata31_buscar_nombre()
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("\n=== Kata 32 - buscar puesto empleado ===")
+    nombre_completo = "Agustín Linares Carrera"
+    empleados = [
+        {"nombre": "Antonio Colmenero Negrillo", "puesto": "Analista"},
+        {"nombre": "Agustín Linares Carrera", "puesto": "Dev. Junior"},
+        {"nombre": "Josefina Martos Loque", "puesto": "Dev. Senior"}
+    ]
+    print(f"'{nombre_completo}' en {empleados} => {kata32_buscar_puesto_empleado(nombre_completo, empleados)}")
+
+    print("\n=== Kata 33 - sumar listas con lambda ===")
+    lista1 = [7, 20, 10, 0]
+    lista2 = [6, 2, -4, 12]
+    print(f"{lista1} + {lista2} => {kata33_sumar_listas_lambda(lista1, lista2)}")
+
+    print("\n=== Kata 34 - clase Arbol ===")
+    try:
+        bonsai = Arbol()
+        bonsai.crecer_tronco()
+        bonsai.nueva_rama()
+        bonsai.crecer_ramas()
+        bonsai.nueva_rama()
+        bonsai.nueva_rama()
+        bonsai.quitar_rama(2)
+        print(bonsai.info_arbol())
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("\n=== Kata 35 - clase UsuarioBanco ===")
+    usuarioA = UsuarioBanco("Alicia", 100, True)
+    usuarioB = UsuarioBanco("Bob", 50, True)
+    usuarioB.agregar_dinero(20)
+    try:
+        usuarioA.transferir_dinero(usuarioB, 80)
+    except Exception as e:
+        print(f"Error: {e}")
+    try:    
+        usuarioA.retirar_dinero(50)
+    except Exception as e:
+        print(f"Error: {e}")
+    print(f"Saldo final de {usuarioA.nombre}: {usuarioA.saldo}€")
+    print(f"Saldo final de {usuarioB.nombre}: {usuarioB.saldo}€")
+
+    print("\n=== Kata 36 - procesar texto ===")
+    texto = "El perro persigue al gato y el gato persigue al ratón"
+    print(procesar_texto(texto, "contar"))
+    print(procesar_texto(texto, "reemplazar", "gato", "conejo"))
+    print(procesar_texto(texto, "eliminar", "perro"))
+
+    print("\n=== Kata 37 - momento del día ===")
+    hora = "09:00"
+    try:
+        print(f"{hora} => {kata37_momento_del_dia(hora)}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("\n=== Kata 38 - nota a texto ===")
+    nota = 100
+    try:
+        print(f"{nota} => {kata38_nota_a_texto(nota)}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("\n=== Kata 39 - area ===")
+    figura = "rectangulo"
+    datos = (5, 10)
+    try:
+        print(f"{figura} - {datos} => {kata39_area(figura, datos)}")
+    except Exception as e:
+        print(f"Error: {e}")
+    figura = "circulo"
+    datos = (5,)
+    try:
+        print(f"{figura} - {datos} => {kata39_area(figura, datos)}")
+    except Exception as e:
+        print(f"Error: {e}")
+    figura = "triangulo"
+    datos = (5, 10)
+    try:
+        print(f"{figura} - {datos} => {kata39_area(figura, datos)}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("\n=== Kata 40 - descuento tienda online ===")
+    try:
+        kata40_descuento_tienda_online()
+    except Exception as e:
+        print(f"Error: {e}")
+
+    print("\n=== fin de las katas ===\n")
